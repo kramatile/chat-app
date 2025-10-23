@@ -1,12 +1,20 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {loginUser} from "./loginApi";
 import {Session} from "../model/common";
 import {CustomError} from "../model/CustomError";
+import { setSession,clearSession,sessionSelector} from "../store/sessionSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../store/store";
+import { useNavigate } from "react-router-dom";
+import { Home } from "../home/Home";
+import "./Login.css";
 
 export function Login() {
-
+    const navigate = useNavigate()
     const [error, setError] = useState({} as CustomError);
-    const [session, setSession] = useState({} as Session);
+    //const [session, setSession] = useState({} as Session);
+    const dispatch = useDispatch<AppDispatch>();
+    const session = useSelector(sessionSelector);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -15,28 +23,53 @@ export function Login() {
         loginUser({user_id: -1, username:  data.get('login') as string, password: data.get('password') as string},
             (result: Session) => {
                 console.log(result);
-                setSession(result);
+                dispatch(setSession(result));
+                //setSession(result);
+                navigate("/home")
                 form.reset();
                 setError(new CustomError(""));
             }, (loginError: CustomError) => {
                 console.log(loginError);
                 setError(loginError);
-                setSession({} as Session);
+                //setSession({} as Session);
+                dispatch(clearSession());
+                navigate("/login")
             });
     };
 
-    return(<>
-        <form onSubmit={handleSubmit}>
-            <input name="login" placeholder="login"/><br/>
-            <input name="password" placeholder="password"/><br/>
-            <button type="submit">connexion</button>
-        </form>
+    useEffect(()=>{
+        let token = sessionStorage.getItem("token");
+        let externalId = sessionStorage.getItem("externalId");
+        let username = sessionStorage.getItem("username");
+        if (token && username && externalId) {
+            dispatch(setSession({token: token, username: username, externalId: externalId} as Session))
+            navigate("/home")
+        }
+        else {
+            navigate("/login")
+        }     
+    },[dispatch])
+
+    return(
+    <div className="login__container">
+        <div className="login">
+            <h1 className="login__title">Log In</h1>
+            <form onSubmit={handleSubmit} className="login__form">
+                <input name="login" placeholder="login" className="login__input"/><br/>
+                <input name="password" placeholder="password" type="password" className="login__input"/><br/>
+                <button type="submit" className="login__submit">connexion</button>
+            </form>
+            <div className="error">
             { session.token &&
-                <span>{session.username} : {session.token}</span>
-            }
-            { error.message &&
-                <span>{error.message}</span>
-            }
-        </>
+                            <span>{session.username} : {session.token}</span>
+                        }
+                        { error.message &&
+                            <span>{error.message}</span>
+                        }
+                        
+            </div>
+                
+        </div>
+    </div>
     );
 }

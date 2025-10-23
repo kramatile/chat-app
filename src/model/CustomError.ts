@@ -1,5 +1,4 @@
 export class CustomError extends Error {
-
     code?: string;
     httpStatus?: number;
 

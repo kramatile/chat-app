@@ -1,0 +1,62 @@
+/* src/components/Navbar.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  color: #fff;
+  padding: 0.8rem 2rem;
+  font-family: "Poppins", sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar__title h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+.navbar__links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+}
+
+.navbar__button {
+  background-color: #3b82f6;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar__button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.logout {
+  background-color: #ef4444;
+}
+
+.logout:hover {
+  background-color: #dc2626;
+}
+
+/* ✅ Responsive */
+@media (max-width: 700px) {
+  .navbar {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .navbar__links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
