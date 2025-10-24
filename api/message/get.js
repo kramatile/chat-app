@@ -1,6 +1,6 @@
 import { getConnecterUser, triggerNotConnected } from "../lib/session";
 import { Redis } from "@upstash/redis";
-// const PushNotifications = require("@pusher/push-notifications-server");
+
 export const config = {
   runtime: "edge",
 };
@@ -14,31 +14,32 @@ export default async function handler(request) {
     const user = await getConnecterUser(request);
     if (!user) {
       console.log("Not connected");
-      return triggerNotConnected(); 
+      return triggerNotConnected();
     }
 
-
-    const message = await request.json(); 
+    const message = await request.json();
     console.log("Incoming message:", message);
 
-    if (!message?.key || !message?.text || !message?.sendTime) {
-      throw new Error("Erreur d'envoi du message, rechargez la page");
+    if (!message?.key) {
+      throw new Error("Erreur de chargement de la conversation, rechargez la page");
     }
 
-    await redis.set(
-      message.key,
-      JSON.stringify({
-        text: message.text,
-        sendTime: message.sendTime,
-        sender_name: message.sender_name,
-        sender_id: message.sender_id
-      }),
-      { ex: 2592000 } 
-    );
+    const messages = await redis.get(message.key);
 
-    return new Response("OK", { status: 200 });
+    if (!messages) {
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify(messages), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+
   } catch (error) {
-    console.error("Message save error:", error);
+    console.error("Message fetch error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

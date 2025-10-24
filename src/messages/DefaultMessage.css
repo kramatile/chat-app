@@ -1,0 +1,18 @@
+.default__chatmessage{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.default__chatmessage p {
+    font-size:2rem;
+    margin: 1.5px;
+}
+
+.logo__default__chatmessage{
+    color: blue;
+    font-weight: 800;
+}

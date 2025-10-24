@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { sessionSelector, setSession, clearSession } from "./store/sessionSlice";
 import  { AppDispatch } from "./store/store";
 import { Signup } from "./user/Signup";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const session = useSelector(sessionSelector);
@@ -15,7 +16,7 @@ function App() {
   const token = session.token || sessionStorage.getItem("token");
   const externalId = session.externalId || sessionStorage.getItem("externalId");
   const username = session.username || sessionStorage.getItem("username");
-
+  const navigate = useNavigate();
   const isLoggedIn = !!(token && externalId && username);
 
   useEffect(() => {
@@ -23,8 +24,9 @@ function App() {
       dispatch(setSession({ token, username, externalId }));
     } else {
       dispatch(clearSession());
+      navigate("/login")
     }
-  }, [dispatch]); // only on first mount
+  }, [dispatch, navigate, token, externalId, username]); 
 
   return (
     <div className="app">

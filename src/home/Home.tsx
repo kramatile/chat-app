@@ -5,7 +5,6 @@ import {Message } from "../messages/Message";
 import { useParams } from "react-router";
 
 export function Home(){
-
     let {type, id} = useParams();
     return(
         <div className="home">

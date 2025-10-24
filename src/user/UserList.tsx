@@ -24,10 +24,10 @@ export function UserList() {
 
     return(
     <div className="users">
-      {status === "idle" && <h3>USERS</h3>}
-      {status === "loading" && <p>Loading users...</p>}
-      {status === "failed" && <p>Failed to load users.</p>}
-      {status === "idle" && users.length === 0 && <p>No users found.</p>}
+      <h3>USERS</h3>
+      {status === "loading" && <p className="default">Loading users...</p>}
+      {status === "failed" && <p className="default">Failed to load users.</p>}
+      {status === "idle" && users.length === 0 && <p className="default">No users found.</p>}
       {users.map((user) => (
         <User key={user.user_id} user={user} />
       ))}

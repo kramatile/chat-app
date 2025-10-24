@@ -13,7 +13,7 @@ export interface User {
 }
 
 export interface Room {
-    room_id: string;
+    room_id: number;
     name: string;
     created_on: string;
 }
@@ -24,6 +24,12 @@ export interface Session {
     externalId: string;
 }
 
+export interface Message {
+    text: string;
+    sender_name: string;
+    sender_id:number;
+    sent_time: string;
+}
 
 export interface EmptyCallback {
     (): void;

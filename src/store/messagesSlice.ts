@@ -1,14 +1,14 @@
 // src/store/userSlice.ts
-import type { User, Room} from "../model/common";
+import type { Message, Room} from "../model/common";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
 
-interface RoomsState {
-  rooms: Room[];
+interface MessageState {
+  messages: Message[];
   status: "idle" | "loading" | "failed";
 }
 
-export const fetchRooms = createAsyncThunk<Room[], string>(
+export const fetchMessages = createAsyncThunk<Message[], string>(
   "rooms/fetchList",
   async (token: string, { rejectWithValue }) => {
     console.log(token);
@@ -27,45 +27,44 @@ export const fetchRooms = createAsyncThunk<Room[], string>(
       }
 
       const data = await response.json();
-      return data as Room[];
+      return data as Message[];
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-const initialState: RoomsState = {
-  rooms: [],
+const initialState: MessageState = {
+  messages: [],
   status: "idle",
 };
 
-export const roomSlice = createSlice({
-  name: "rooms",
+export const messageSlice = createSlice({
+  name: "messages",
   initialState,
   reducers: {
 
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchRooms.pending, (state) => {
+      .addCase(fetchMessages.pending, (state) => {
         state.status = "loading";
         console.log('pending',state)
 
       })
-      .addCase(fetchRooms.fulfilled, (state, action) => {
+      .addCase(fetchMessages.fulfilled, (state, action) => {
         state.status = "idle";
-        state.rooms = action.payload;
+        state.messages = action.payload;
         console.log('idle',state)
 
       })
-      .addCase(fetchRooms.rejected, (state) => {
+      .addCase(fetchMessages.rejected, (state) => {
         state.status = "failed";
       });
   },
 });
 
-export const roomSelector = (state: RootState) => state.rooms;
-export const roomIdSelector = (state: RootState) => (id: number) => state.rooms.rooms.find(
-        (room) => room.room_id === id
-      );
-export default roomSlice.reducer;
+export const messageSelector = (state: RootState) => state.messages;
+
+
+export default messageSlice.reducer;

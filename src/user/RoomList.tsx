@@ -21,10 +21,10 @@ export function RoomList() {
 
     return(
     <div className="rooms">
-      {status === "idle" && <h3>ROOMS</h3>}
-      {status === "loading" && <p>Loading rooms...</p>}
-      {status === "failed" && <p>Failed to load rooms.</p>}
-      {status === "idle" && rooms.length === 0 && <p>No rooms found.</p>}
+      <h3>ROOMS</h3>
+      {status === "loading" && <p className="default">Loading rooms...</p>}
+      {status === "failed" && <p className="default">Failed to load rooms.</p>}
+      {status === "idle" && rooms.length === 0 && <p className="default">No rooms found.</p>}
 
       {rooms.map((room) => (
         <Room key={room.name} room={room} />

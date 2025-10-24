@@ -55,7 +55,7 @@ export const userSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.status = "idle";
         state.users = action.payload;
-        console.log('idle',state)
+        console.log('idle',state.users)
 
       })
       .addCase(fetchUsers.rejected, (state) => {
@@ -67,5 +67,8 @@ export const userSlice = createSlice({
 export const userSelector = (state: RootState) => state.users;
 export const filteredUsers = (state: RootState) => (username: string) => state.users.users.filter(
         (user) => user.username != username
+      );
+export const userIdSelector = (state: RootState) => (id: number) => state.users.users.find(
+        (user) => user.user_id === id
       );
 export default userSlice.reducer;

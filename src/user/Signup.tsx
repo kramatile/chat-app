@@ -51,7 +51,6 @@ export function Signup() {
     )
   };
 
-  // If already logged in, go to /home
   useEffect(() => {
     if (session?.token || sessionStorage.getItem("token")) {
       navigate("/home");

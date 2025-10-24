@@ -5,7 +5,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #141e30, #243b55);
+  background: linear-gradient(135deg, rgb(47, 47, 185), #243b55);
   color: #fff;
   padding: 0.8rem 2rem;
   font-family: "Poppins", sans-serif;
@@ -13,6 +13,8 @@
   top: 0;
   z-index: 50;
   box-sizing: border-box;
+  border-bottom: 2px solid black;
+
 }
 
 .navbar__title h2 {
@@ -30,6 +32,7 @@
 }
 
 .navbar__button {
+  border-bottom: 2px solid black;
   background-color: #3b82f6;
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -43,7 +46,9 @@
 }
 
 .logout {
-  background-color: #ef4444;
+  background-color: #449cef;
+  border: 2px solid black;
+
 }
 
 .logout:hover {
