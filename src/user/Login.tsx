@@ -66,7 +66,6 @@ export function Login() {
                         { error.message &&
                             <span>{error.message}</span>
                         }
-                        
             </div>
                 
         </div>

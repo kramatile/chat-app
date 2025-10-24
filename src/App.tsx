@@ -40,6 +40,10 @@ function App() {
           element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
         />
         <Route path="/signup" element= {<Signup/>}/>
+        <Route
+            path="/messages/:type/:id"
+            element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
+          />
       </Routes>
     </div>
   );

@@ -1,19 +1,19 @@
 // src/store/userSlice.ts
-import type { User } from "../model/common";
+import type { User, Room} from "../model/common";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
 
-interface UsersState {
-  users: User[];
+interface RoomsState {
+  rooms: Room[];
   status: "idle" | "loading" | "failed";
 }
 
-export const fetchUsers = createAsyncThunk<User[], string>(
-  "users/fetchList",
+export const fetchRooms = createAsyncThunk<Room[], string>(
+  "rooms/fetchList",
   async (token: string, { rejectWithValue }) => {
     console.log(token);
     try {
-      const response = await fetch(`/api/users`, {
+      const response = await fetch(`/api/rooms`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -23,49 +23,46 @@ export const fetchUsers = createAsyncThunk<User[], string>(
 
       if (!response.ok) {
         const err = await response.json();
-        return rejectWithValue(err.message || "Failed to fetch users");
+        return rejectWithValue(err.message || "Failed to fetch rooms");
       }
 
       const data = await response.json();
-      return data as User[];
+      return data as Room[];
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-const initialState: UsersState = {
-  users: [],
+const initialState: RoomsState = {
+  rooms: [],
   status: "idle",
 };
 
-export const userSlice = createSlice({
-  name: "users",
+export const roomSlice = createSlice({
+  name: "rooms",
   initialState,
   reducers: {
-    
+
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsers.pending, (state) => {
+      .addCase(fetchRooms.pending, (state) => {
         state.status = "loading";
         console.log('pending',state)
 
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
+      .addCase(fetchRooms.fulfilled, (state, action) => {
         state.status = "idle";
-        state.users = action.payload;
+        state.rooms = action.payload;
         console.log('idle',state)
 
       })
-      .addCase(fetchUsers.rejected, (state) => {
+      .addCase(fetchRooms.rejected, (state) => {
         state.status = "failed";
       });
   },
 });
 
-export const userSelector = (state: RootState) => state.users;
-export const filteredUsers = (state: RootState) => (username: string) => state.users.users.filter(
-        (user) => user.username != username
-      );
-export default userSlice.reducer;
+export const roomSelector = (state: RootState) => state.rooms;
+export default roomSlice.reducer;

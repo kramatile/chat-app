@@ -12,9 +12,14 @@ export interface User {
     external_id?: string;
 }
 
+export interface Room {
+    room_id: string;
+    name: string;
+    created_on: string;
+}
 export interface Session {
     token: string;
-    username?: string;
+    username: string;
     id?: number;
     externalId: string;
 }

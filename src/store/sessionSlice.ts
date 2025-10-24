@@ -6,7 +6,7 @@ import { RootState } from './store';
 const initialState: Session = {
     username: "",
     token:"",
-    externalId:""
+    externalId:"",
 };
 
 

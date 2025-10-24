@@ -1,6 +1,7 @@
 /* src/components/Navbar.css */
 
 .navbar {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -11,6 +12,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  box-sizing: border-box;
 }
 
 .navbar__title h2 {
