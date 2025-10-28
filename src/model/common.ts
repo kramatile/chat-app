@@ -20,7 +20,7 @@ export interface Room {
 export interface Session {
     token: string;
     username: string;
-    id?: number;
+    id: number;
     externalId: string;
 }
 
@@ -29,6 +29,7 @@ export interface Message {
     sender_name: string;
     sender_id:number;
     sent_time: string;
+    key?:string;
 }
 
 export interface EmptyCallback {

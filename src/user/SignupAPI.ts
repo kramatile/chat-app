@@ -16,6 +16,7 @@ export function signupUser(user: User, onResult: SessionCallback, onError: Error
                 sessionStorage.setItem('token', session.token);
                 sessionStorage.setItem('externalId', session.externalId);
                 sessionStorage.setItem('username', session.username || "");
+                sessionStorage.setItem("id",""+session.id);
                 onResult(session)
             } else {
                 const error = await response.json() as CustomError;

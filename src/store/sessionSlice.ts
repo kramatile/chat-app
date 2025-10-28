@@ -7,6 +7,7 @@ const initialState: Session = {
     username: "",
     token:"",
     externalId:"",
+    id:0
 };
 
 
@@ -21,6 +22,7 @@ export const sessionSlice = createSlice({
             state.username = "";
             state.token = "";
             state.externalId = "";
+            state.id = 0;
         })
        
     },

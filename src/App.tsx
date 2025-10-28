@@ -9,6 +9,7 @@ import { sessionSelector, setSession, clearSession } from "./store/sessionSlice"
 import  { AppDispatch } from "./store/store";
 import { Signup } from "./user/Signup";
 import { useNavigate } from "react-router-dom";
+import { Session } from "./model/common";
 
 function App() {
   const session = useSelector(sessionSelector);
@@ -16,13 +17,14 @@ function App() {
   const token = session.token || sessionStorage.getItem("token");
   const externalId = session.externalId || sessionStorage.getItem("externalId");
   const username = session.username || sessionStorage.getItem("username");
+  const id = sessionStorage.getItem("id");
   const navigate = useNavigate();
   const isLoggedIn = !!(token && externalId && username);
 
   useEffect(() => {
-    if (token && externalId && username) {
-      dispatch(setSession({ token, username, externalId }));
-    } else {
+    if (token && username && externalId && id) {
+               dispatch(setSession({token: token, username: username, externalId: externalId, id: parseInt(id)} as Session))
+      } else {
       dispatch(clearSession());
       navigate("/login")
     }

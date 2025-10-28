@@ -1,32 +1,114 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import type { AppDispatch } from "../store/store";
+import { fetchMessages } from "../store/messagesSlice";
+import { sessionSelector, clearSession } from "../store/sessionSlice";
+import { useNavigate } from "react-router-dom";
+import type { Message as MessageType } from "../model/common";
 import { Message } from "./components/Message";
-import { useSelector } from "react-redux";
+import { messageSelector, addMessage } from "../store/messagesSlice";
 
-interface Message {
-text:string,
-sender: string,
-sendTime: string
-}
-export function Chat({type,id}: {type:string,id:number}){
-    const [messages, setMessages] = useState<Message[]>([])
+export function Chat({ type, id }: { type: string; id: number }) {
+  const [input, setInput] = useState("");
 
-    return (
-        <>
-            <div className="chat__body">
-                <Message text="hii" username="test" sendTime="21222"/>
-                <Message text="hii" username="aya" sendTime="21222"/>
+  const session = useSelector(sessionSelector);
+  const {messages} = useSelector(messageSelector);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
-                {
-                    messages.map((message)=>{
-                       return  <Message text={message.text} username={message.sender} sendTime={message.sendTime}/>
-                    })
-                }
-            </div>
-            <div className="chat__footer">
-                <input/>
-                <button>Send</button>
-            </div>
-        </>
+
+  const token = session.token || sessionStorage.getItem("token");
+  const externalId = session.externalId || sessionStorage.getItem("externalId");
+  const username = session.username || sessionStorage.getItem("username");
+  const cur_id = sessionStorage.getItem("id");
+
+  useEffect(() => {
+    if (!token || !externalId || !username || !cur_id) {
+      dispatch(clearSession());
+      navigate("/login");
+      return;
+    }
+    let convKey =""
+    if (type === "room"){
+            convKey = `${type}:${id}`;
+    }
+    else {
+        const left_id = Math.min(id, parseInt(cur_id))
+        const right_id = Math.max(id,parseInt(cur_id))
+        convKey = `${left_id}:${right_id}`;
+    }
+
+    dispatch(fetchMessages({ token, conv_id: convKey }))
+      
+      .catch((err) => {
+        console.error("Failed to fetch messages:", err);
+      });
+  }, [token, externalId, username, type, id, cur_id,dispatch, navigate]);
+
+
+    const handleClick = async () => {
+      if (!input.trim()) return;
+        if (!token || !externalId || !username || !cur_id) {
+          dispatch(clearSession());
+          navigate("/login");
+          return;
+        }      
+        const newMessage = {
+          text: input,
+          sender_name: username,
+          sender_id: parseInt(cur_id),
+          sent_time: new Date().toISOString(),
+          key: type === "room"
+            ? `${type}:${id}`
+            : `${Math.min(id, parseInt(cur_id))}:${Math.max(id, parseInt(cur_id))}`,
+        } ; 
+
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authentication: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newMessage),
+      });
+
+      if (res.ok) {
+        dispatch(addMessage(newMessage));
+        setInput("");
+      }
+      
+    };
+
+  useEffect(() => {
+    const chatBody = document.querySelector(".chat__body");
+    if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+  }, [messages]);
+
+  
+  return (
+    <div className="chat">
+      <div className="chat__body">
+        {/*    <Message text=" i love aya" username="test" sendTime="now"/>
+        <Message text=":)))" username="Aya" sendTime="now"/>*/}
+        {messages.length === 0 ? (
+          <p className="chat__placeholder">No messages yet</p>
+        ) : (
+          messages.map((message, index) => (
+            <Message
+              key={index}
+              text={message.text}
+              username={message.sender_name}
+              sendTime={message.sent_time}
         
-    )
+            />
+          ))
+        )}
+      </div>
+
+      <div className="chat__footer">
+        <input value={input} type="text" placeholder="Type a message..." onChange={(e)=>setInput(e.target.value)}/>
+        <button onClick={handleClick}>Send</button>
+      </div>
+    </div>
+  );
 }

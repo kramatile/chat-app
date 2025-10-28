@@ -1,39 +1,33 @@
-import { getConnecterUser, triggerNotConnected } from "../lib/session";
+import { getConnecterUser, triggerNotConnected } from "../../lib/session";
 import { Redis } from "@upstash/redis";
 
-export const config = {
-  runtime: "edge",
-};
+export const config = { runtime: "edge" };
 
 const redis = Redis.fromEnv();
 
 export default async function handler(request) {
   try {
-    const headers = new Headers(request.headers);
-
     const user = await getConnecterUser(request);
     if (!user) {
       console.log("Not connected");
       return triggerNotConnected();
     }
 
-    const message = await request.json();
-    console.log("Incoming message:", message);
-
-    if (!message?.key) {
-      throw new Error("Erreur de chargement de la conversation, rechargez la page");
-    }
-
-    const messages = await redis.get(message.key);
-
-    if (!messages) {
-      return new Response(JSON.stringify([]), {
-        status: 200,
+    if (request.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify(messages), {
+    const { key } = await request.json();
+    if (!key) {
+      throw new Error("Erreur de chargement de la conversation, rechargez la page");
+    }
+
+    const messages = await redis.lrange(key,0,-1);
+
+    return new Response(JSON.stringify(messages ?? []), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

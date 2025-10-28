@@ -41,8 +41,9 @@ export function Login() {
         let token = sessionStorage.getItem("token");
         let externalId = sessionStorage.getItem("externalId");
         let username = sessionStorage.getItem("username");
-        if (token && username && externalId) {
-            dispatch(setSession({token: token, username: username, externalId: externalId} as Session))
+        let id = sessionStorage.getItem("id");
+        if (token && username && externalId && id) {
+            dispatch(setSession({token: token, username: username, externalId: externalId, id: parseInt(id)} as Session))
             navigate("/home")
         }
         else {

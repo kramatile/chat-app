@@ -8,22 +8,26 @@ interface MessageState {
   status: "idle" | "loading" | "failed";
 }
 
-export const fetchMessages = createAsyncThunk<Message[], string>(
-  "rooms/fetchList",
-  async (token: string, { rejectWithValue }) => {
-    console.log(token);
+export const fetchMessages = createAsyncThunk<
+  Message[],
+  { token: string; conv_id: string },
+  { rejectValue: string }
+>(
+  "messages/fetchList",
+  async ({ token, conv_id }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/rooms`, {
-        method: "GET",
+      const response = await fetch(`/api/message/get`, {
+        method: "POST", 
         headers: {
           "Content-Type": "application/json",
           Authentication: `Bearer ${token}`,
         },
+        body: JSON.stringify({ key: conv_id }), 
       });
 
       if (!response.ok) {
         const err = await response.json();
-        return rejectWithValue(err.message || "Failed to fetch rooms");
+        return rejectWithValue(err.message || "Failed to fetch messages");
       }
 
       const data = await response.json();
@@ -34,6 +38,7 @@ export const fetchMessages = createAsyncThunk<Message[], string>(
   }
 );
 
+
 const initialState: MessageState = {
   messages: [],
   status: "idle",
@@ -43,19 +48,20 @@ export const messageSlice = createSlice({
   name: "messages",
   initialState,
   reducers: {
+    addMessage : (state, action:PayloadAction<Message>) => {
+      state.messages.push(action.payload);
+    }
 
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchMessages.pending, (state) => {
         state.status = "loading";
-        console.log('pending',state)
 
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.status = "idle";
         state.messages = action.payload;
-        console.log('idle',state)
 
       })
       .addCase(fetchMessages.rejected, (state) => {
@@ -64,6 +70,7 @@ export const messageSlice = createSlice({
   },
 });
 
+export const {addMessage} = messageSlice.actions;
 export const messageSelector = (state: RootState) => state.messages;
 
 
