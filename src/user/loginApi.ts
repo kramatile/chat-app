@@ -1,7 +1,14 @@
 import {Session, SessionCallback, ErrorCallback, User} from "../model/common";
 import {CustomError} from "../model/CustomError";
+import * as PusherPushNotifications from "@pusher/push-notifications-web";
 
+const beamsClient = new PusherPushNotifications.Client({
+        instanceId: import.meta.env.VITE_PUSHER_INSTANCE_ID||"",
+});
+
+    
 export function loginUser(user: User, onResult: SessionCallback, onError: ErrorCallback) {
+   
     fetch("/api/login",
         {
             method: "POST", // ou 'PUT'
@@ -17,11 +24,20 @@ export function loginUser(user: User, onResult: SessionCallback, onError: ErrorC
                 sessionStorage.setItem('externalId', session.externalId);
                 sessionStorage.setItem('username', session.username || "");
                 sessionStorage.setItem("id",""+session.id);
-                window.Notification.requestPermission().then((permission) => {
-                if (permission === 'granted') {
-                    console.log("granted")
-                    }
+                const beamsTokenProvider = new PusherPushNotifications.TokenProvider({
+                    url: `/api/beams`,
+                    headers: {
+                        Authentication: "Bearer " + session.token, // Headers your auth endpoint needs
+                    },
                 });
+
+                beamsClient.start()
+                    .then(() => beamsClient.addDeviceInterest('global'))
+                    .then(() => beamsClient.setUserId(session.externalId, beamsTokenProvider))
+                    .then(() => {
+                        beamsClient.getDeviceId().then((deviceId: string) => console.log("Push id : " + deviceId));
+                    })
+                    .catch(console.error);
                 onResult(session)
             } else {
                 const error = await response.json() as CustomError;
