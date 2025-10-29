@@ -12,11 +12,17 @@ export function Message({
 }) {
     let currUser = sessionStorage.getItem("username");
     let isOwnMessage = currUser === username;
+    let date = new Date(sendTime);
+    let day = date.getDay();
+    let month = date.getMonth();
+    let year = date.getFullYear();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
   return (
     <div className={`message ${isOwnMessage ? "message--own" : "message--other"}`}>
       <div className="message__header">
         <span className="message__username">{username}</span>
-        <span className="message__time">{sendTime}</span>
+        <span className="message__time">{day}/{month}/{year} - {hours}:{minutes}</span>
       </div>
       <div className="message__text">{text}</div>
     </div>

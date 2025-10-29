@@ -1,4 +1,3 @@
-/* General message container */
 .message {
   display: flex;
   flex-direction: column;
@@ -16,7 +15,6 @@
   animation: bubbleIn 0.15s ease-in-out;
 }
 
-/* ✅ Messages from current user (align right) */
 .message--own {
   align-self: flex-end;
   background: linear-gradient(135deg, slateblue 0%, rgb(85, 70, 190) 100%);
@@ -38,7 +36,6 @@
   text-align: left;
 }
 
-/* Header (username + timestamp) */
 .message__header {
   display: flex;
   justify-content: space-between;
@@ -46,26 +43,23 @@
   margin-bottom: 0.25rem;
   font-size: 0.8rem;
   opacity: 0.9;
+  gap: 10px;
 }
 
-/* Username */
 .message__username {
   font-weight: 600;
 }
 
-/* Timestamp */
 .message__time {
   font-size: 0.75rem;
   opacity: 0.8;
 }
 
-/* Message text */
 .message__text {
   font-size: 0.95rem;
   word-break: break-word;
 }
 
-/* Pop-in animation */
 @keyframes bubbleIn {
   0% {
     opacity: 0;
