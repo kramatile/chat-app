@@ -1,8 +1,12 @@
 import {checkSession, unauthorizedResponse} from "../lib/session.js";
 import { Redis } from "@upstash/redis";
-
+import PushNotifications from "@pusher/push-notifications-server";
 const redis = Redis.fromEnv();
 
+const beamsClient = new PushNotifications({
+  instanceId: process.env.VITE_PUSHER_INSTANCE_ID,
+  secretKey: process.env.VITE_PUSHER_SECRET_KEY, 
+});
 
 export default async function handler(req, res) {
   try {
@@ -33,9 +37,34 @@ export default async function handler(req, res) {
         sender_id: message.sender_id,
       })
     );
-
     await redis.expire(message.key, 2592000); 
-
+    try {
+    if (message.type === "room") {
+      await beamsClient.publishToInterests(["global"], {
+        web: { notification: {
+          title: `New message from ${message.sender_name}`,
+          body: message.text,
+          ico: "https://www.univ-brest.fr/themes/custom/ubo_parent/favicon.ico",
+        }
+       },
+      });
+    } else {
+      if (typeof message.sent_to_ext_id === 'string' && message.sent_to_ext_id.length > 0) {
+                await beamsClient.publishToUsers([message.sent_to_ext_id], {
+                  web: { notification: {
+                    title: `New private message from ${message.sender_name}`,
+                    body: message.text,
+                    ico: "https://www.univ-brest.fr/themes/custom/ubo_parent/favicon.ico",
+                  } },
+                });
+              } else {
+                console.warn(`Skipped push notification: Invalid message.sent_to_ext_id (${message.sent_to_ext_id}) for user chat key: ${message.key}`);
+                // You might add logging here to figure out *why* it was missing
+              }   
+         }
+  } catch (err) {
+    console.error("Failed to send push notification:", err);
+  }
     return res.status(200).json({ status: "ok" });
   } catch (error) {
     console.error("Message save error:", error);
