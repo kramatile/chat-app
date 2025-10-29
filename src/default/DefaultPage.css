@@ -1,0 +1,10 @@
+.default__page{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: cornflowerblue;
+    font-size: 2.4rem;
+    font-weight: 800;
+}

@@ -22,10 +22,16 @@ export function Login() {
         const data = new FormData(form);
         loginUser({user_id: -1, username:  data.get('login') as string, password: data.get('password') as string},
             (result: Session) => {
+                window.Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    console.log("granted")
+                    }
+                });
                 console.log(result);
                 dispatch(setSession(result));
                 //setSession(result);
                 navigate("/home")
+                
                 form.reset();
                 setError(new CustomError(""));
             }, (loginError: CustomError) => {

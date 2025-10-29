@@ -10,7 +10,7 @@ import  { AppDispatch } from "./store/store";
 import { Signup } from "./user/Signup";
 import { useNavigate } from "react-router-dom";
 import { Session } from "./model/common";
-
+import { DefaultPage } from "./default/DefaultPage";
 function App() {
   const session = useSelector(sessionSelector);
   const dispatch = useDispatch<AppDispatch>();
@@ -26,7 +26,6 @@ function App() {
                dispatch(setSession({token: token, username: username, externalId: externalId, id: parseInt(id)} as Session))
       } else {
       dispatch(clearSession());
-      navigate("/login")
     }
   }, [dispatch, navigate, token, externalId, username]); 
 
@@ -48,6 +47,8 @@ function App() {
             path="/messages/:type/:id"
             element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
           />
+        <Route path="*" element={<DefaultPage/>}/>
+        
       </Routes>
     </div>
   );

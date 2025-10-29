@@ -38,6 +38,11 @@ export function Signup() {
     signupUser({username: username, email: email, password: password} as User,
         (result: Session) => {
             console.log(result);
+            window.Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              console.log("granted")
+            }
+            });
             dispatch(setSession(result));
             navigate("/home");
             form.reset();

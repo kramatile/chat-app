@@ -17,6 +17,11 @@ export function loginUser(user: User, onResult: SessionCallback, onError: ErrorC
                 sessionStorage.setItem('externalId', session.externalId);
                 sessionStorage.setItem('username', session.username || "");
                 sessionStorage.setItem("id",""+session.id);
+                window.Notification.requestPermission().then((permission) => {
+                if (permission === 'granted') {
+                    console.log("granted")
+                    }
+                });
                 onResult(session)
             } else {
                 const error = await response.json() as CustomError;
