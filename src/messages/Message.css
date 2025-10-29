@@ -57,3 +57,34 @@
 .chat__footer button:hover {
   background-color: rgb(80, 72, 160);
 }
+
+.chat__body__loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: slateblue;
+  font-weight: 600;
+}
+
+.chat__body__failed {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(58, 6, 34);
+  font-weight: 600;
+
+}
+
+.chat__placeholder {
+    width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: slateblue;
+  font-weight: 600;
+}

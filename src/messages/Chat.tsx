@@ -8,11 +8,11 @@ import type { Message as MessageType } from "../model/common";
 import { Message } from "./components/Message";
 import { messageSelector, addMessage } from "../store/messagesSlice";
 
-export function Chat({ type, id }: { type: string; id: number }) {
+export function Chat({ type, id, name }: { type: string; id: number, name: string | undefined }) {
   const [input, setInput] = useState("");
 
   const session = useSelector(sessionSelector);
-  const {messages} = useSelector(messageSelector);
+  const {messages, status} = useSelector(messageSelector);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -87,11 +87,15 @@ export function Chat({ type, id }: { type: string; id: number }) {
   
   return (
     <div className="chat">
-      <div className="chat__body">
+      <div className="chat__header">
+                <h3>Chat {type === "room" ? "in" : "with"} : {name}</h3>
+      </div>
+      {status === "idle" && <div className="chat__body">
+            
         {/*    <Message text=" i love aya" username="test" sendTime="now"/>
         <Message text=":)))" username="Aya" sendTime="now"/>*/}
         {messages.length === 0 ? (
-          <p className="chat__placeholder">No messages yet</p>
+          <div className="chat__placeholder">No messages yet</div>
         ) : (
           messages.map((message, index) => (
             <Message
@@ -104,7 +108,21 @@ export function Chat({ type, id }: { type: string; id: number }) {
           ))
         )}
       </div>
-
+}
+    {
+      status === "loading" && <div className="chat__body">
+        <div className="chat__body__loading">
+           Loading the messages . . . 
+        </div>
+      </div>
+    }
+    {
+      status === "failed" && <div className="chat__body">
+        <div className="chat__body__failed">
+          An error has occured
+        </div>
+      </div>
+    }
       <div className="chat__footer">
         <input value={input} type="text" placeholder="Type a message..." onChange={(e)=>setInput(e.target.value)}/>
         <button onClick={handleClick}>Send</button>
