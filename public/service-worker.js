@@ -10,7 +10,7 @@ PusherPushNotifications.onNotificationReceived = ({
   handleNotification,
 }) => {
 
-  console.log("worker got : " + JSON.stringify(payload));
+  console.log("worker got : " + JSON.stringify(payload) + pushEvent);
 
   // Get the client.
   self.clients.matchAll().then((matchedClient) => matchedClient.forEach(client => {

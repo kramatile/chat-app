@@ -115,11 +115,19 @@ export function Chat({
                     // This is where you process messages sent from your service worker.
                     // For example, if the SW sends a new message object after a push,
                     // you can dispatch it to Redux here.
-                    console.log("Got event from sw : ", event.data);
+                    console.log("Got event from sw : ", event.data.message);
                     
                     // You might want to dispatch an action here, for example:
                   if (event.data.type === 'NEW_PUSH_MESSAGE') {
-                       dispatch(addMessage(event.data.payload));
+                      let newMessage = {
+                        text : event.data.message.text,
+                        sender_name: event.data.message.sender_name,
+                        sender_id: event.data.message.sender_id,
+                        sent_time: event.data.message.sent_time
+                      } as MessageType
+                      if (newMessage.sender_id != currentUserId){
+                          dispatch(addMessage(newMessage));
+                      }
                  }
                 };
 

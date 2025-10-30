@@ -40,22 +40,47 @@ export default async function handler(req, res) {
     await redis.expire(message.key, 2592000); 
     try {
     if (message.type === "room") {
-      await beamsClient.publishToInterests(["global"], {
+      await beamsClient.publishToInterests([message.key], { 
         web: { notification: {
           title: `New message from ${message.sender_name}`,
           body: message.text,
           ico: "https://www.univ-brest.fr/themes/custom/ubo_parent/favicon.ico",
+          data:{
+                    type: "NEW_PUSH_MESSAGE",
+                    // NOTE: Adding all message data to be sent to the Service Worker
+                    message: {
+                        text: message.text,
+                        sender_name: message.sender_name,
+                        sender_id: message.sender_id,
+                        sent_time: message.sent_time,
+                        key: message.key,
+                        type: message.type
+                    } 
+                  }
         }
        },
       });
     } else {
       if (typeof message.sent_to_ext_id === 'string' && message.sent_to_ext_id.length > 0) {
-                await beamsClient.publishToUsers([message.sent_to_ext_id], {
+          await beamsClient.publishToUsers([message.sent_to_ext_id], {
                   web: { notification: {
                     title: `New private message from ${message.sender_name}`,
                     body: message.text,
                     ico: "https://www.univ-brest.fr/themes/custom/ubo_parent/favicon.ico",
-                  } },
+                  }, 
+                  data:{
+                    type: "NEW_PUSH_MESSAGE",
+                    // NOTE: Adding all message data to be sent to the Service Worker
+                    message: {
+                        text: message.text,
+                        sender_name: message.sender_name,
+                        sender_id: message.sender_id,
+                        sent_time: message.sent_time,
+                        key: message.key,
+                        type: message.type
+                    } 
+                  }
+                },
                 });
               } else {
                 console.warn(`Skipped push notification: Invalid message.sent_to_ext_id (${message.sent_to_ext_id}) for user chat key: ${message.key}`);
