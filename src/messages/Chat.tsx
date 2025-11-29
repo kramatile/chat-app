@@ -30,19 +30,14 @@ export function Chat({
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { users, status: userStatus } = useSelector(userSelector);
-  // Get recipient data
   const destinataire_ext_id = useMemo(() => {
-    // We only need this for 'user' type chats
     if (type !== 'user') return "";
     console.log(users)
-    // Find the user directly from the users array
     const destinataire = users.find(user => user.user_id === id);
     
-    // Return the external ID, or an empty string if not found
     return destinataire?.external_id || "";
 
-  }, [type, id, users]); // Recalculate if the chat type, ID, or the global users list changes
-  // Gather session data
+  }, [type, id, users]); 
   const token = session.token || sessionStorage.getItem("token");
   const externalId = session.externalId || sessionStorage.getItem("externalId");
   const username = session.username || sessionStorage.getItem("username");
@@ -105,19 +100,13 @@ export function Chat({
     }
   };
     useEffect(() => {
-        // Ensure the browser supports Service Workers
         if ("serviceWorker" in navigator) {
             const sw = navigator.serviceWorker;
             
-            // Set up the message listener
             if (sw != null) {
                 sw.onmessage = (event) => {
-                    // This is where you process messages sent from your service worker.
-                    // For example, if the SW sends a new message object after a push,
-                    // you can dispatch it to Redux here.
                     console.log("Got event from sw : ", event.data.message);
                     
-                    // You might want to dispatch an action here, for example:
                   if (event.data.type === 'NEW_PUSH_MESSAGE') {
                       let newMessage = {
                         text : event.data.message.text,
@@ -131,17 +120,13 @@ export function Chat({
                  }
                 };
 
-                // Optional: You can also send a message *to* the active Service Worker
-                // sw.controller?.postMessage("Hello from the Chat component!");
             }
         } else {
             console.warn("Service Workers not supported in this browser.");
         }
         
-        // Cleanup: remove the listener when the component unmounts
         return () => {
             if ("serviceWorker" in navigator && navigator.serviceWorker) {
-                // It's good practice to clear handlers, though some browsers handle it.
                 navigator.serviceWorker.onmessage = null; 
             }
         };
@@ -149,7 +134,6 @@ export function Chat({
     }, [dispatch]);
 
   useEffect(() => {
-    // This effect handles auto-scrolling to the bottom of the chat
     const chatBody = document.querySelector(".chat__body");
     if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
   }, [messages]);
